@@ -34,6 +34,13 @@ unsigned int hash(char * s){
 	return h;
 }
 
+struct aliset make_aliset(const char * s1, const char * s2){
+	struct aliset A;
+	strcpy(A.first, s1);
+	strcpy(A.second, s2);
+	return A;
+}
+
 int find(struct aliset v[], char * c){
 	// return the index of aliv[] if found, -1 if not
 	int i;
@@ -71,6 +78,9 @@ int main(){
 
 	int av_index = 0; // count of aliases stored
 	int sv_index = 0; // count of variables set
+
+	struct hashentry * aliv_ht[sz];
+	struct hashentry * setv_ht[sz];
 
 	// Hash function tests:
 	unsigned int x = hash("cat");
@@ -140,6 +150,13 @@ int main(){
 			}
 			int i;
 			for(i = 1; i < argc; i += 2){
+				struct aliset new_alias = make_aliset(argv[i], argv[i+1]);
+				printf("new_alias : first = %s \n", new_alias.first);
+				printf("new_alias : second = %s \n", new_alias.second);
+
+				//add(aliv_ht, new_alias, sz);
+
+
 				strcpy(aliv[av_index].first, argv[i]);
 				strcpy(aliv[av_index].second, argv[i+1]);
 				av_index += 1;
