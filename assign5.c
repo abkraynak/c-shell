@@ -20,6 +20,20 @@ struct aliset{
 	char second[50]; // the value or long command version
 };
 
+struct hashentry{
+	struct aliset * a;
+	struct hashentry * next;
+};
+
+unsigned int hash(char * s){
+	int i;
+	int h = 12361;
+	while((i = *s++) != 0){
+		h = h * 691 + i;
+	}
+	return h;
+}
+
 int find(struct aliset v[], char * c){
 	// return the index of aliv[] if found, -1 if not
 	int i;
@@ -57,6 +71,16 @@ int main(){
 
 	int av_index = 0; // count of aliases stored
 	int sv_index = 0; // count of variables set
+
+	// Hash function tests:
+	unsigned int x = hash("cat");
+	printf("Hash of 'cat' is %u \n", x);
+	unsigned int y = hash("tac");
+	printf("Hash of 'tac' is %u \n", y);
+	unsigned int z = hash("longtest");
+	printf("Hash of 'longtest' is %u \n", z);
+	unsigned int w = hash("cat");
+	printf("Hash of 'cat' is %u \n", w);
 
 	new_cmd_text();
 
