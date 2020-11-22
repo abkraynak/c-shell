@@ -5,10 +5,9 @@
 #include <sys/wait.h>
 
 /*
-This is mostly the same structure as Assignment 2 with the two new commands
-added ("myset" and "myalias"). Command line text is checked against known aliases 
-and known set variables and replaced when aliases are found or a variable is 
-used with the @ sign. Then it runs the command (using exec(), etc).
+This is a modification of prior shell program to add the
+ability to redirect and pipe.
+Use < and > to redirect and | to pipe
 */
 
 // Type represents both an myalias and myset command
