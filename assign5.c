@@ -8,6 +8,10 @@
 This is a modification of prior shell program to add the
 ability to redirect and pipe.
 Use < and > to redirect and | to pipe
+
+A hashtable has been added to store set variables and
+aliases as an improvement over the simple array from the
+last iteration.
 */
 
 // Type represents both an myalias and myset command
