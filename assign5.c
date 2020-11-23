@@ -21,7 +21,7 @@ struct aliset{
 };
 
 struct hashentry{
-	struct aliset * a;
+	struct aliset a;
 	struct hashentry * next;
 };
 
@@ -39,6 +39,34 @@ struct aliset make_aliset(const char * s1, const char * s2){
 	strcpy(A.first, s1);
 	strcpy(A.second, s2);
 	return A;
+}
+
+struct hashentry * make_hashentry(struct aliset A){
+	struct hashentry * H = (struct hashentry *)malloc(sizeof(struct hashentry));
+	strcpy(H->a.first, A.first);
+	strcpy(H->a.second, A.second);
+	H->next = NULL;
+	return H;
+}
+
+void insert(struct hashentry * ht[], struct aliset A, int size){
+	struct hashentry * H = make_hashentry(A);
+	int pos = hash(A.first) % size;
+	printf("position of %s is %d \n", A.first, pos);
+	H->next = ht[pos];
+	ht[pos] = H;
+}
+
+struct hashentry * find2(struct hashentry * ht[], char * c, int size){
+	int pos = hash(c) % size;
+	struct hashentry * H = ht[pos];
+	while(H != NULL){
+		if(strcmp(H->a.first, c) == 0){
+			return H;
+		}
+		H = H -> next;
+	}
+	return NULL;
 }
 
 int find(struct aliset v[], char * c){
@@ -121,7 +149,13 @@ int main(){
 		argv[i] = NULL;
 
 		// Find and replace any aliases on the command line with their values
-		for(i = 0; i < argc; i += 1){		
+		for(i = 0; i < argc; i += 1){
+			struct hashentry * H = find2(aliv_ht, argv[i], sz);
+			if(H != NULL){
+				argv[i] = H -> a.second;
+			}
+
+		
 			int r = find(aliv, argv[i]);
 			if(r >= 0){ // if the argument was an alias
 				argv[i] = aliv[r].second;
@@ -151,15 +185,14 @@ int main(){
 			int i;
 			for(i = 1; i < argc; i += 2){
 				struct aliset new_alias = make_aliset(argv[i], argv[i+1]);
-				printf("new_alias : first = %s \n", new_alias.first);
-				printf("new_alias : second = %s \n", new_alias.second);
+				//printf("new_alias : first = %s \n", new_alias.first);
+				//printf("new_alias : second = %s \n", new_alias.second);
 
-				//add(aliv_ht, new_alias, sz);
+				insert(aliv_ht, new_alias, sz);
 
-
-				strcpy(aliv[av_index].first, argv[i]);
-				strcpy(aliv[av_index].second, argv[i+1]);
-				av_index += 1;
+				//strcpy(aliv[av_index].first, argv[i]);
+				//strcpy(aliv[av_index].second, argv[i+1]);
+				//av_index += 1;
 			}
 			continue;
 		}
