@@ -147,6 +147,25 @@ int main(){
 			}
 		}
 
+		// If | is present, redirect stdout and stdin and adjust the command line
+		for(i = 0; i < argc; i += 1){
+			if(strcmp(argv[i], "|") == 0){
+				redir_in = 1;
+				redir_out = 1;
+				strcpy(output_file, "pipe");
+				strcpy(input_file, "pipe");
+				// Remove | from command line and shift rest down
+				int j;
+				for(j = i; j < argc-2; j += 1){
+					argv[j] = argv[j+2];
+				}
+				// Removes the "duplicates" left in the last 2 positions of the array
+				argv[argc-2] = NULL;
+				argv[argc-1] = NULL;
+				argc -= 2;
+			}
+		}
+
 		if(strcmp(argv[0], "myalias") == 0){ // myalias command
 			if((argc < 3) || (argc % 2 != 1)){
 				fprintf(stderr, "usage: myalias [shortcut] [longcommand]\n");
