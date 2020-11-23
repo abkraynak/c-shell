@@ -47,6 +47,7 @@ int main(){
 	int sz = 1000;
 	
 	int redir_out = 0;
+	int redir_in = 0;
 	int fd;
 
 	char * argv[sz];
@@ -59,6 +60,7 @@ int main(){
 	int sv_index = 0; // count of variables set
 
 	char output_file[100];
+	char input_file[100];
 
 	new_cmd_text();
 
@@ -128,6 +130,23 @@ int main(){
 			}
 		}
 
+		// If < is present, redirect stdin and adjust the command line
+		for(i = 0; i < argc; i += 1){
+			if(strcmp(argv[i], "<") == 0){
+				redir_in = 1;
+				strcpy(input_file, argv[i+1]);
+				// Remove < from command line and shift rest down
+				int j;
+				for(j = i; j < argc-2; j += 1){
+					argv[j] = argv[j+2];
+				}
+				// Removes the "duplicates" left in the last 2 positions of the array
+				argv[argc-2] = NULL;
+				argv[argc-1] = NULL;
+				argc -= 2;
+			}
+		}
+
 		if(strcmp(argv[0], "myalias") == 0){ // myalias command
 			if((argc < 3) || (argc % 2 != 1)){
 				fprintf(stderr, "usage: myalias [shortcut] [longcommand]\n");
@@ -160,7 +179,17 @@ int main(){
 		if(p == 0){ // child process running
 			if(redir_out == 1){
 				close(1);
-				fd = open(output_file, O_WRONLY | O_TRUNC | O_CREAT, 0600);
+				if((fd = open(output_file, O_WRONLY | O_TRUNC | O_CREAT, 0600)) == -1){
+					fprintf(stderr, "could not open output file %s \n", output_file);
+					continue;
+				}
+			}
+			if(redir_in == 1){
+				close(0);
+				if((fd = open(input_file, O_RDONLY)) == -1){
+					fprintf(stderr, "could not open input file %s \n", input_file);
+					continue;
+				}
 			}
 			execvp(argv[0], argv);
 			printf("Could not execvp\n");
