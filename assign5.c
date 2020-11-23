@@ -44,6 +44,9 @@ void new_cmd_text(){
 int main(){
 	int argc;
 	int sz = 1000;
+	
+	int redir_out = 0;
+	int file_pos;
 
 	char * argv[sz];
 	char line[sz];
@@ -53,6 +56,8 @@ int main(){
 
 	int av_index = 0; // count of aliases stored
 	int sv_index = 0; // count of variables set
+
+	char output_file[100];
 
 	new_cmd_text();
 
@@ -104,6 +109,36 @@ int main(){
 				}
 			}
 		}
+
+		// If > is present, redirect stdout
+		printf("Command line before: \n");	
+		for(i = 0; i < argc; i += 1){
+			printf("%s ", argv[i]);
+		}
+		printf("\n");
+
+		for(i = 0; i < argc; i += 1){
+			if(strcmp(argv[i], ">") == 0){
+				redir_out = 1;
+				strcpy(output_file, argv[i+1]);
+				printf("output file is %s \n", output_file);
+
+				// Remove > from command line and shift rest down
+				int j;
+				for(j = i; j < argc-2; j += 1){
+					argv[j] = argv[j+2];
+				}
+				argv[argc-2] = NULL;
+				argv[argc-1] = NULL;
+				argc -= 2;
+				
+			}
+		}
+		printf("Command line after: \n");	
+		for(i = 0; i < argc; i += 1){
+			printf("%s ", argv[i]);
+		}
+		printf("\n");
 
 		if(strcmp(argv[0], "myalias") == 0){ // myalias command
 			if((argc < 3) || (argc % 2 != 1)){
