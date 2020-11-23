@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 /*
 This is a modification of prior shell program to add the
@@ -46,7 +47,7 @@ int main(){
 	int sz = 1000;
 	
 	int redir_out = 0;
-	int file_pos;
+	int fd;
 
 	char * argv[sz];
 	char line[sz];
@@ -110,35 +111,22 @@ int main(){
 			}
 		}
 
-		// If > is present, redirect stdout
-		printf("Command line before: \n");	
-		for(i = 0; i < argc; i += 1){
-			printf("%s ", argv[i]);
-		}
-		printf("\n");
-
+		// If > is present, redirect stdout and adjust the command line
 		for(i = 0; i < argc; i += 1){
 			if(strcmp(argv[i], ">") == 0){
 				redir_out = 1;
 				strcpy(output_file, argv[i+1]);
-				printf("output file is %s \n", output_file);
-
 				// Remove > from command line and shift rest down
 				int j;
 				for(j = i; j < argc-2; j += 1){
 					argv[j] = argv[j+2];
 				}
+				// Removes the "duplicates" left in the last 2 positions of the array
 				argv[argc-2] = NULL;
 				argv[argc-1] = NULL;
 				argc -= 2;
-				
 			}
 		}
-		printf("Command line after: \n");	
-		for(i = 0; i < argc; i += 1){
-			printf("%s ", argv[i]);
-		}
-		printf("\n");
 
 		if(strcmp(argv[0], "myalias") == 0){ // myalias command
 			if((argc < 3) || (argc % 2 != 1)){
@@ -170,6 +158,10 @@ int main(){
 
 		int p = fork();
 		if(p == 0){ // child process running
+			if(redir_out == 1){
+				close(1);
+				fd = open(output_file, O_WRONLY | O_TRUNC | O_CREAT, 0600);
+			}
 			execvp(argv[0], argv);
 			printf("Could not execvp\n");
 			exit(1);
