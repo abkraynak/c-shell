@@ -48,7 +48,9 @@ int main(){
 	
 	int redir_out = 0;
 	int redir_in = 0;
+	int pipes = 0;
 	int fd;
+	int link[2];
 
 	char * argv[sz];
 	char line[sz];
@@ -62,12 +64,24 @@ int main(){
 	char output_file[100];
 	char input_file[100];
 
+	// Save value of stdin stdout to use after redirect
+	int orig_stdin = dup(0);
+	int orig_stdout = dup(1);
+
 	new_cmd_text();
 
 	while(1){
 		int s;
 		printf("~>>~ "); // print prompt
+	
+		// reset each to 0 each loop
+		redir_out = 0;
+		redir_in = 0;
+		pipes = 0;
 
+		char * prog1[sz];
+		char * prog2[sz];
+		
 		if(!fgets(line, 1000, stdin)){
 			return 0;
 		}
@@ -150,19 +164,29 @@ int main(){
 		// If | is present, redirect stdout and stdin and adjust the command line
 		for(i = 0; i < argc; i += 1){
 			if(strcmp(argv[i], "|") == 0){
-				redir_in = 1;
-				redir_out = 1;
-				strcpy(output_file, "pipe");
-				strcpy(input_file, "pipe");
-				// Remove | from command line and shift rest down
-				int j;
-				for(j = i; j < argc-2; j += 1){
-					argv[j] = argv[j+2];
+				int j, k;
+				pipes = 1;
+				// Loop to build prog1 array to exec
+				for(j = 0; j < i; j += 1){
+					prog1[j] = argv[j];
 				}
+		
+				// Loop to build prog2 array to exec
+				for(j = i + 1, k = 0; j < argc; j += 1, k += 1){
+					//strcpy(prog2[k], argv[j]);
+					prog2[k] = argv[j];
+				}
+
+/*				// Remove | from command line and shift rest down
+				int m;
+				for(m = i; m < argc-2; m += 1){
+					argv[m] = argv[m+2];
+				}
+
 				// Removes the "duplicates" left in the last 2 positions of the array
 				argv[argc-2] = NULL;
 				argv[argc-1] = NULL;
-				argc -= 2;
+				argc -= 2;*/
 			}
 		}
 
@@ -209,6 +233,42 @@ int main(){
 					fprintf(stderr, "could not open input file %s \n", input_file);
 					continue;
 				}
+			}
+			if(pipes == 1){
+				int p1, p2;
+				pipe(link);
+				p1 = fork();
+				if(p1 == 0){
+					close(1);
+					dup(link[1]);
+					execvp(prog1[0], prog1);
+					fprintf(stderr, "Cannot execlp p1\n");
+					exit(1);
+				}
+				close(link[1]);
+				p2 = fork();
+				if(p2 == 0){
+					close(0);
+					dup(link[0]);
+					execvp(prog2[0], prog2);
+					fprintf(stderr, "Cannot execlp p2\n");
+					exit(1);					
+				}
+				p2 = wait(& s);
+				if(WIFEXITED(s)){
+					if(WEXITSTATUS(s) != 0){
+						printf("Exit code %d\n", WEXITSTATUS(s));
+					}
+				}
+				p1 = wait(& s);
+				if(WIFEXITED(s)){
+					if(WEXITSTATUS(s) != 0){
+						printf("Exit code %d\n", WEXITSTATUS(s));
+					}
+				}
+				exit(0);
+				exit(0);
+				continue;
 			}
 			execvp(argv[0], argv);
 			printf("Could not execvp\n");
