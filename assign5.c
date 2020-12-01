@@ -35,11 +35,17 @@ char * substring(char * src, int m, int n){
 	return dst;
 }
 
+void reset_arr(char * arr[], int sz){
+	int i;
+	for(i = 0; i < sz; i += 1){
+		arr[i] = NULL;
+	}
+}
+
 void new_cmd_text(){
 	printf("\n*** New Commands ***\n");
-	printf("Use \"myset [var] = [value]\" to set variables\n");
-	printf("  Call variables with \"@var\" to use with other commands\n");
-	printf("Use \"myalias [shortcut] [longcommand]\" to make shortcuts\n\n");
+	printf("Use < and > to redirect inputs and outputs to different programs and files\n");
+	printf("Use | to pipe the output to one program to be the input to another\n\n");
 }
 
 int main(){
@@ -63,6 +69,8 @@ int main(){
 
 	char output_file[100];
 	char input_file[100];
+	char * prog1[sz];
+	char * prog2[sz];
 
 	// Save value of stdin stdout to use after redirect
 	int orig_stdin = dup(0);
@@ -74,14 +82,13 @@ int main(){
 		int s;
 		printf("~>>~ "); // print prompt
 	
-		// reset each to 0 each loop
+		// Reset all to 0 for each new command entered
 		redir_out = 0;
 		redir_in = 0;
 		pipes = 0;
+		reset_arr(prog1, sz);
+		reset_arr(prog2, sz);		
 
-		char * prog1[sz];
-		char * prog2[sz];
-		
 		if(!fgets(line, 1000, stdin)){
 			return 0;
 		}
@@ -171,22 +178,12 @@ int main(){
 					prog1[j] = argv[j];
 				}
 		
+
 				// Loop to build prog2 array to exec
 				for(j = i + 1, k = 0; j < argc; j += 1, k += 1){
 					//strcpy(prog2[k], argv[j]);
 					prog2[k] = argv[j];
 				}
-
-/*				// Remove | from command line and shift rest down
-				int m;
-				for(m = i; m < argc-2; m += 1){
-					argv[m] = argv[m+2];
-				}
-
-				// Removes the "duplicates" left in the last 2 positions of the array
-				argv[argc-2] = NULL;
-				argv[argc-1] = NULL;
-				argc -= 2;*/
 			}
 		}
 
