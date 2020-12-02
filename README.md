@@ -3,7 +3,7 @@ A simple shell written in C language.
 ***
 ## Table of Contents
 * [Introduction](#introduction)
-* [Usage Examples](#usage-examples)
+* [Usage Examples](#usage-and-examples)
 ***
 ## Introduction
 This project is a small, simple shell program for UNIX systems. This program parses a command, checks for the custom commands and operators to handle, and executing them.
