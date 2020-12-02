@@ -33,3 +33,9 @@ Use > and < to redirect output and input, respectively.
 cat frankenstein.txt | grep beautiful
 ````
 Pipes use the output of the first command to run the second command. Use the | operator between them.
+***
+## Future Improvements
+Some future improvements I have planned and thought-out:
+- Use a hashtable to store variables and aliases to more efficiently find and store them
+- Make header file to simplify project
+- Improve general efficiency of program
