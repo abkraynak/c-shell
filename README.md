@@ -1,5 +1,5 @@
 # c-shell
-A simple shell written in C language.
+A shell written in C language with custom implementation of some commands and features.
 ***
 ## Table of Contents
 * [Introduction](#introduction)
