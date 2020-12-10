@@ -4,49 +4,13 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include "abkraynak/cshell.h"
 
 /*
 This is a modification of prior shell program to add the
 ability to redirect and pipe.
 Use < and > to redirect and | to pipe
 */
-
-// Type represents both an myalias and myset command
-struct aliset{
-	char first[50]; // the variable or shortcut
-	char second[50]; // the value or long command version
-};
-
-int find(struct aliset v[], char * c){
-	// return the index of aliv[] if found, -1 if not
-	int i;
-	for(i = 0; i < 1000; i += 1){
-		if(strcmp(v[i].first, c) == 0){
-			return i;
-		}
-	}
-	return -1;
-}
-
-char * substring(char * src, int m, int n){
-	int len = n - m + 1;
-	char * dst = (char*)malloc(sizeof(char) * (len));
-	strncpy(dst, (src + m), len);
-	return dst;
-}
-
-void reset_arr(char * arr[], int sz){
-	int i;
-	for(i = 0; i < sz; i += 1){
-		arr[i] = NULL;
-	}
-}
-
-void new_cmd_text(){
-	printf("\n*** New Commands ***\n");
-	printf("Use < and > to redirect inputs and outputs to different programs and files\n");
-	printf("Use | to pipe the output to one program to be the input to another\n\n");
-}
 
 int main(){
 	int argc;
@@ -279,4 +243,35 @@ int main(){
 			}
 		}
 	}
+}
+
+int find(struct aliset v[], char * c){
+	// return the index of aliv[] if found, -1 if not
+	int i;
+	for(i = 0; i < 1000; i += 1){
+		if(strcmp(v[i].first, c) == 0){
+			return i;
+		}
+	}
+	return -1;
+}
+
+char * substring(char * src, int m, int n){
+	int len = n - m + 1;
+	char * dst = (char*)malloc(sizeof(char) * (len));
+	strncpy(dst, (src + m), len);
+	return dst;
+}
+
+void reset_arr(char * arr[], int sz){
+	int i;
+	for(i = 0; i < sz; i += 1){
+		arr[i] = NULL;
+	}
+}
+
+void new_cmd_text(){
+	printf("\n*** New Commands ***\n");
+	printf("Use < and > to redirect inputs and outputs to different programs and files\n");
+	printf("Use | to pipe the output to one program to be the input to another\n\n");
 }
