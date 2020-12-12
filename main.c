@@ -44,7 +44,7 @@ int main(){
 
 	while(1){
 		int s;
-		printf("~>>~ "); // print prompt
+		printf("> "); // prompt
 	
 		// Reset all to 0 for each new command entered
 		redir_out = 0;
