@@ -1,10 +1,10 @@
 # c-shell
-A shell written in C language with custom implementation of some commands and features.
+Shell written in C language with custom implementation of some commands and features
 ***
 ## Table of Contents
 * [Introduction](#introduction)
 * [Purpose](#purpose)
-* [Usage Examples](#usage-and-examples)
+* [Usage and Examples](#usage-and-examples)
 * [Future Improvements](#future-improvements)
 ***
 ## Introduction
@@ -20,24 +20,24 @@ It taught me a lot about parsing inputs, using processes, and becoming more fami
 ## Usage and Examples
 ### Aliases
 ````
->> myalias list ls
+> myalias list ls
 ````
 Use aliases to create shortcuts to commands.
 ### Variables
 ````
->> myset x = abc
->> echo @x
+> myset x = abc
+> echo @x
 ````
 Set variables to use in other commands. Use the @ sign to use the variable.
 ### Redirects
 ````
->> ls -al > list.txt
->> wc < list.txt
+> ls -al > list.txt
+> wc < list.txt
 ````
 Use > and < to redirect output and input, respectively. 
 ### Pipes
 ````
->> cat frankenstein.txt | grep beautiful
+> cat frankenstein.txt | grep beautiful
 ````
 Pipes use the output of the first command to run the second command. Use the | operator between them.
 ***
